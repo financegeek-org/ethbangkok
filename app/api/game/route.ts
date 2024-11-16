@@ -8,7 +8,10 @@ export async function POST(req: NextRequest) {
     // claim tokens
     // 10 + level per day
     // 1. Connect to an Ethereum provider
-    const provider = new ethers.JsonRpcProvider("https://worldchain-sepolia.gateway.tenderly.co"); // or use your own provider URL
+    // https://4801.rpc.thirdweb.com
+    // https://worldchain-sepolia.gateway.tenderly.co
+    // https://worldchain-sepolia.g.alchemy.com/public
+    const provider = new ethers.JsonRpcProvider("https://4801.rpc.thirdweb.com"); // or use your own provider URL
 
     // 2. Set up the backend wallet (the wallet sending the tokens)
     const backendPrivateKey = process.env.SYSTEM_WALLET; // Don't hardcode in production, use environment variables
@@ -27,6 +30,8 @@ export async function POST(req: NextRequest) {
     // 5. The amount to transfer (in the token's smallest unit, e.g., wei for ETH, or the token's decimal equivalent)
     const amountToSend = ethers.parseUnits("1.0", 18); // Example: Sending 10 tokens with 18 decimals
 
+    console.log(customerWalletAddress);
+    console.log(backendPrivateKey?.substring(0,6));
     // 6. Transfer function
     let receipt;
     try {
