@@ -132,6 +132,8 @@ export function Game() {
         {activeTab === 'settings' && (
           <div className="text-center pt-10">
             <p>Settings content goes here</p>
+            Token Contract: 0xC143a7c1d9a75C99219D06b0AbF457E48093AF9b<br />
+            Explorer: <a href="https://worldchain-sepolia.explorer.alchemy.com/address/0xC143a7c1d9a75C99219D06b0AbF457E48093AF9b">https://worldchain-sepolia.explorer.alchemy.com/address/0xC143a7c1d9a75C99219D06b0AbF457E48093AF9b</a>
           </div>
         )}
       </main>
