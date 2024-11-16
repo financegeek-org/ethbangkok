@@ -8,6 +8,13 @@ import { Home, Swords, Settings } from 'lucide-react'
 import { signIn, signOut, useSession } from "next-auth/react";
 import { MiniKit, tokenToDecimals, Tokens, PayCommandInput } from '@worldcoin/minikit-js'
 
+const claimTokens = async () => {
+  const res = await fetch('/api/initiate-payment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }, // Added header for JSON
+    body: JSON.stringify({ action: "claim", customerWallet: "0x6871D69057bf6e1Da3C9be4164048c78B5beFd41" }), // Added JSON body
+  });
+}
 
 const sendPayment = async () => {
   const res = await fetch('/api/initiate-payment', {
@@ -113,8 +120,8 @@ export function Game() {
         {activeTab === 'actions' && (
           <div className="space-y-6">
             <section>
-              <h2 className="text-lg font-semibold mb-2">Combat Actions</h2>
-              <Button className="w-full">Attack</Button>
+              <h2 className="text-lg font-semibold mb-2">Claim CAT TOkens</h2>
+              <Button className="w-full" onClick={claimTokens}>Claim</Button>
             </section>
             <section>
               <h2 className="text-lg font-semibold mb-2">Get stronger</h2>
