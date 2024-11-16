@@ -6,6 +6,49 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Home, Swords, Settings } from 'lucide-react'
 import { signIn, signOut, useSession } from "next-auth/react";
+import { MiniKit, tokenToDecimals, Tokens, PayCommandInput } from '@worldcoin/minikit-js'
+
+
+const sendPayment = async () => {
+  const res = await fetch('/api/initiate-payment', {
+    method: 'POST',
+  });
+  const { id } = await res.json();
+
+  const payload: PayCommandInput = {
+    reference: id,
+    to: '0xfF9311E69306394Fc117165D9844BD72102AcFa1', // Test address
+    tokens: [
+      {
+        symbol: Tokens.WLD,
+        token_amount: tokenToDecimals(1, Tokens.WLD).toString(),
+      },
+      {
+        symbol: Tokens.USDCE,
+        token_amount: tokenToDecimals(3, Tokens.USDCE).toString(),
+      },
+    ],
+    description: 'Pay to train your cat',
+  }
+
+  if (MiniKit.isInstalled()) {
+    return
+  }
+
+  const { finalPayload } = await MiniKit.commandsAsync.pay(payload)
+
+  if (finalPayload.status == 'success') {
+    const res = await fetch(`/api/confirm-payment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(finalPayload),
+    })
+    const payment = await res.json()
+    if (payment.success) {
+      // Congrats your payment was successful!
+    }
+  }
+}
 
 export function Game() {
   const [activeTab, setActiveTab] = useState('main')
@@ -29,6 +72,7 @@ export function Game() {
     return () => window.removeEventListener('resize', updateImageHeight)
   }, [])
 
+  
   const stats = [
     { name: 'Health', value: 10, max: 10, color: 'bg-red-500' },
     { name: 'Hunger', value: 3, max: 10, color: 'bg-blue-500' },
@@ -73,8 +117,8 @@ export function Game() {
               <Button className="w-full">Attack</Button>
             </section>
             <section>
-              <h2 className="text-lg font-semibold mb-2">Special Abilities</h2>
-              <Button className="w-full">Use Special Ability</Button>
+              <h2 className="text-lg font-semibold mb-2">Get stronger</h2>
+              <Button className="w-full" onClick={sendPayment}>Train</Button>
             </section>
           </div>
         )}
