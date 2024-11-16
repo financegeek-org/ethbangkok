@@ -6,16 +6,13 @@ import {
   LitPKPResource,
 } from "@lit-protocol/auth-helpers";
 import { LitContracts } from "@lit-protocol/contracts-sdk";
-import { AccessControlConditions } from "@lit-protocol/types";
 import { EthWalletProvider } from "@lit-protocol/lit-auth-client";
-import { LIT_NETWORKS_KEYS } from "@lit-protocol/types";
 import { api } from "@lit-protocol/wrapped-keys";
-import { getEncryptedKey } from "@lit-protocol/wrapped-keys/src/lib/api";
-import fs from "node:fs";
+import { getEncryptedKey } from "@lit-protocol/wrapped-keys/src/lib/api/index.js";
 import * as ethers from "ethers";
 
-import { getEnv, mintPkp } from "./utils";
-const litActionCode = fs.readFileSync("src/litAction.bundle.js", "utf8");
+import { getEnv, mintPkp, getChainInfo } from "./utils.js";
+import { litActionCode } from "./litAction.js";
 
 const { generatePrivateKey } = api;
 
@@ -23,19 +20,17 @@ const ETHEREUM_PRIVATE_KEY = getEnv("ETHEREUM_PRIVATE_KEY");
 const TOGETHER_API_KEY = getEnv("TOGETHER_API_KEY");
 const LIT_PKP_PUBLIC_KEY = process.env["LIT_PKP_PUBLIC_KEY"];
 const LIT_NETWORK =
-  (process.env["LIT_NETWORK"] as LIT_NETWORKS_KEYS) || LitNetwork.DatilDev;
+  process.env["LIT_NETWORK"] || LitNetwork.DatilDev;
+const CHAIN_TO_SEND_TX_ON = getEnv("CHAIN_TO_SEND_TX_ON");
 
 export const polygonOpenAI = async () => {
-  let litNodeClient: LitNodeClient;
-  let pkpInfo: {
-    tokenId?: string;
-    publicKey?: string;
-    ethAddress?: string;
-  } = {
+  let litNodeClient;
+  let pkpInfo = {
     publicKey: LIT_PKP_PUBLIC_KEY,
   };
 
   try {
+    const chainInfo = getChainInfo(CHAIN_TO_SEND_TX_ON) || "yellowstone";
     const ethersWallet = new ethers.Wallet(
       ETHEREUM_PRIVATE_KEY,
       new ethers.providers.JsonRpcProvider(LIT_RPC.CHRONICLE_YELLOWSTONE)
@@ -60,11 +55,7 @@ export const polygonOpenAI = async () => {
 
     if (LIT_PKP_PUBLIC_KEY === undefined || LIT_PKP_PUBLIC_KEY === "") {
       console.log("🔄 PKP wasn't provided, minting a new one...");
-      pkpInfo = (await mintPkp(ethersWallet)) as {
-        tokenId?: string;
-        publicKey?: string;
-        ethAddress?: string;
-      };
+      pkpInfo = (await mintPkp(ethersWallet));
       console.log("✅ PKP successfully minted");
       console.log(`ℹ️  PKP token ID: ${pkpInfo.tokenId}`);
       console.log(`ℹ️  PKP public key: ${pkpInfo.publicKey}`);
@@ -86,7 +77,7 @@ export const polygonOpenAI = async () => {
 
     console.log("🔄 Getting the Session Signatures...");
     const pkpSessionSigs = await litNodeClient.getPkpSessionSigs({
-      pkpPublicKey: pkpInfo.publicKey!,
+      pkpPublicKey: pkpInfo.publicKey,
       chain: "ethereum",
       authMethods: [authMethod],
       expiration: new Date(Date.now() + 1000 * 60 * 10).toISOString(), // 10 minutes
@@ -122,8 +113,8 @@ export const polygonOpenAI = async () => {
       litNodeClient,
       id: response.id,
     });
-
-    const accessControlConditions: AccessControlConditions = [
+/*
+    const accessControlConditions = [
       {
         contractAddress: "",
         standardContractType: "",
@@ -132,14 +123,30 @@ export const polygonOpenAI = async () => {
         parameters: [":userAddress"],
         returnValueTest: {
           comparator: "=",
-          value: pkpInfo.ethAddress!,
+          value: pkpInfo.ethAddress,
         },
       },
     ];
+*/
+// lit action will allow anyone to decrypt this api key with a valid authSig
+const chain = 'ethereum';
+const accessControlConditions = [
+  {
+    contractAddress: '',
+    standardContractType: '',
+    chain,
+    method: 'eth_getBalance',
+    parameters: [':userAddress', 'latest'],
+    returnValueTest: {
+      comparator: '>=',
+      value: '0',
+    },
+  },
+];
 
     const {
-      ciphertext: apiKeyCipherText,
-      dataToEncryptHash: apiKeyDataToEncryptHash,
+      ciphertext: togetherKeyCipherText,
+      dataToEncryptHash: togetherKeyDataToEncryptHash,
     } = await encryptString(
       {
         accessControlConditions: accessControlConditions,
@@ -158,8 +165,8 @@ export const polygonOpenAI = async () => {
         accessControlConditions,
         polygonCipherText,
         polygonDataToEncryptHash,
-        apiKeyCipherText,
-        apiKeyDataToEncryptHash,
+        togetherKeyCipherText,
+        togetherKeyDataToEncryptHash,
         prompt,
       },
     });
@@ -170,6 +177,8 @@ export const polygonOpenAI = async () => {
   } catch (error) {
     console.error(error);
   } finally {
-    litNodeClient!.disconnect();
+    litNodeClient.disconnect();
   }
 };
+
+polygonOpenAI();
