@@ -1,13 +1,6 @@
 // @ts-nocheck
 
 const _litActionCode = async () => {
-  const dataApiKey = await Lit.Actions.decryptAndCombine({
-    accessControlConditions,
-    ciphertext: polygonCipherText,
-    dataToEncryptHash: polygonDataToEncryptHash,
-    authSig: null,
-    chain: 'ethereum',
-  });
   const infApiKey = await Lit.Actions.decryptAndCombine({
     accessControlConditions,
     ciphertext: togetherKeyCipherText,
@@ -16,11 +9,12 @@ const _litActionCode = async () => {
     chain: 'ethereum',
   });
 
+  
   // the code in the function given to runOnce below will only be run by one node
   let answer = await Lit.Actions.runOnce({ waitForResponse: true, name: "txnSender" }, async () => {
     // Get data
     const payloadData = {
-      
+
     };
     const responseData = await fetch(
       "https://ethbangkok-be.vercel.app/api/data/",
@@ -40,7 +34,7 @@ const _litActionCode = async () => {
     const messages = [
       {
         "role": "system",
-        "content": "You are a therapy cat helping the user feel better and more positive. Take into account that the user has the following mental health challenges. " + data,
+        "content": "The user will give a short sentence on how they're feeling. Respond with ONLY a prompt for an image generator for a cute cat that will make the user feel better based on how they're feeling. Take into account that the user has the following mental health challenges. " + data,
       },
       {
         "role": "user",
@@ -63,7 +57,7 @@ const _litActionCode = async () => {
       }
     );
     const resultInf = await responseInf.json();
-    const answer=resultInf.choices[0].message.content;
+    const answer = resultInf.choices[0].message.content;
     console.log(answer);
 
     return answer; // return the tx to be broadcast to all other nodes
@@ -73,7 +67,6 @@ const _litActionCode = async () => {
   // this requests a signature share from the Lit Node
   // the signature share will be automatically returned in the HTTP response from the node
   // all the params (toSign, publicKey, sigName) are passed in from the LitJsSdk.executeJs() function
-  const sigShare = await LitActions.signEcdsa({ toSign, publicKey, sigName });
   Lit.Actions.setResponse({ response: answer });
 };
 

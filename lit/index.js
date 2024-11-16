@@ -13,8 +13,14 @@ import * as ethers from "ethers";
 
 import { getEnv, mintPkp, getChainInfo } from "./utils.js";
 import { litActionCode } from "./litAction.js";
+import { createInterface } from 'node:readline/promises';
 
 const { generatePrivateKey } = api;
+
+const rl = createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
 const ETHEREUM_PRIVATE_KEY = getEnv("ETHEREUM_PRIVATE_KEY");
 const TOGETHER_API_KEY = getEnv("TOGETHER_API_KEY");
@@ -39,7 +45,7 @@ export const polygonOpenAI = async () => {
     console.log("🔄 Connecting to the Lit network...");
     litNodeClient = new LitNodeClient({
       litNetwork: LIT_NETWORK,
-      debug: false,
+      debug: true,
     });
     await litNodeClient.connect();
     console.log("✅ Connected to the Lit network");
@@ -48,7 +54,7 @@ export const polygonOpenAI = async () => {
     const litContracts = new LitContracts({
       signer: ethersWallet,
       network: LIT_NETWORK,
-      debug: false,
+      debug: true,
     });
     await litContracts.connect();
     console.log("✅ Connected LitContracts client to network");
@@ -155,7 +161,7 @@ const accessControlConditions = [
       litNodeClient
     );
 
-    const prompt = "Should I buy DogeCoin?";
+    const query = await rl.question("How are you feeling?");
 
     console.log("🔄 Executing the Lit Action...");
     const litActionResponse = await litNodeClient.executeJs({
@@ -167,7 +173,7 @@ const accessControlConditions = [
         polygonDataToEncryptHash,
         togetherKeyCipherText,
         togetherKeyDataToEncryptHash,
-        prompt,
+        query,
       },
     });
     console.log("✅ Executed the Lit Action");
