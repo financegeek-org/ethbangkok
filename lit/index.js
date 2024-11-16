@@ -111,6 +111,7 @@ export const polygonOpenAI = async () => {
       `✅ Generated wrapped key with id: ${response.id} and public key: ${response.generatedPublicKey}`
     );
 
+/*
     const {
       ciphertext: polygonCipherText,
       dataToEncryptHash: polygonDataToEncryptHash,
@@ -119,7 +120,6 @@ export const polygonOpenAI = async () => {
       litNodeClient,
       id: response.id,
     });
-/*
     const accessControlConditions = [
       {
         contractAddress: "",
@@ -160,6 +160,16 @@ const accessControlConditions = [
       },
       litNodeClient
     );
+    const {
+      ciphertext: polygonKeyCipherText,
+      dataToEncryptHash: polygonKeyDataToEncryptHash,
+    } = await encryptString(
+      {
+        accessControlConditions: accessControlConditions,
+        dataToEncrypt: ETHEREUM_PRIVATE_KEY,
+      },
+      litNodeClient
+    );
 
     const query = await rl.question("How are you feeling?");
 
@@ -169,8 +179,8 @@ const accessControlConditions = [
       code: litActionCode,
       jsParams: {
         accessControlConditions,
-        polygonCipherText,
-        polygonDataToEncryptHash,
+        polygonKeyCipherText,
+        polygonKeyDataToEncryptHash,
         togetherKeyCipherText,
         togetherKeyDataToEncryptHash,
         query,

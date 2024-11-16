@@ -1,11 +1,13 @@
 import { LitContracts } from "@lit-protocol/contracts-sdk";
-import { LitNetwork } from "@lit-protocol/constants";
-import { LIT_NETWORKS_KEYS } from "@lit-protocol/types";
+import { LitNetwork, LIT_CHAINS  } from "@lit-protocol/constants";
 import * as ethers from "ethers";
+import dotenv from 'dotenv';
+// Load environment variables from .env file
+dotenv.config();
 
-const LIT_NETWORK = process.env["LIT_NETWORK"] as LIT_NETWORKS_KEYS || LitNetwork.DatilDev;
+const LIT_NETWORK = process.env["LIT_NETWORK"] || LitNetwork.DatilDev;
 
-export const getEnv = (name: string): string => {
+export const getEnv = (name) => {
   const env = process.env[name];
   if (env === undefined || env === "")
     throw new Error(
@@ -14,7 +16,19 @@ export const getEnv = (name: string): string => {
   return env;
 };
 
-export const mintPkp = async (ethersSigner: ethers.Wallet) => {
+export const getChainInfo = (
+  chain
+) => {
+  if (LIT_CHAINS[chain] === undefined)
+    throw new Error(`Chain: ${chain} is not supported by Lit`);
+
+  return {
+    rpcUrl: LIT_CHAINS[chain].rpcUrls[0],
+    chainId: LIT_CHAINS[chain].chainId,
+  };
+};
+
+export const mintPkp = async (ethersSigner) => {
   try {
     console.log("🔄 Connecting LitContracts client to network...");
     const litContracts = new LitContracts({

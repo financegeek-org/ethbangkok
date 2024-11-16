@@ -1,8 +1,13 @@
-Sepolia contract
+WorldChain Sepolia contract
 0xC143a7c1d9a75C99219D06b0AbF457E48093AF9b
 https://worldchain-sepolia.explorer.alchemy.com/address/0xC143a7c1d9a75C99219D06b0AbF457E48093AF9b
 
-Sepolia SuperCATR contract
+WorldChain Sepolia SuperCATR contract
 0xf9530F1b672Ef065F7f2D6265714342a7AdE1695
 https://worldchain-sepolia.explorer.alchemy.com/address/0xf9530F1b672Ef065F7f2D6265714342a7AdE1695
 
+Polygon Amoy CCAT contract
+https://amoy.polygonscan.com/address/0x892997c4376da36809ee9301bc8c6463fd67530a
+
+Polygon Amoy CCAT sample
+https://amoy.polygonscan.com/tx/0xf3f9d8e0d3744afdfafef2c381fefcf723cb1c2f1cd8b4629d123e363c7da406
