@@ -79,7 +79,7 @@ export function Game() {
     return () => window.removeEventListener('resize', updateImageHeight)
   }, [])
 
-  
+
   const stats = [
     { name: 'Health', value: 10, max: 10, color: 'bg-red-500' },
     { name: 'Hunger', value: 3, max: 10, color: 'bg-blue-500' },
@@ -120,12 +120,21 @@ export function Game() {
         {activeTab === 'actions' && (
           <div className="space-y-6">
             <section>
-              <h2 className="text-lg font-semibold mb-2">Claim CAT TOkens</h2>
-              <Button className="w-full" onClick={claimTokens}>Claim</Button>
+              <h2 className="text-lg font-semibold mb-2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M15 3H14V4H13H12H11H10V3H9H8H7V4H6V5H5V6V7V8H4H3V9V10V11V12V13V14H4H5V15V16V17V18V19V20V21H6H7H8H9H10H11H12H13H14H15H16H17H18H19V20V19V18V17V16V15V14H20H21V13V12V11V10V9V8H20H19V7V6V5H18V4H17V3H16H15ZM7 7V6H8V5H9H10V6H11V7V8H10H9H8H7V7ZM16 8H17V7V6H16V5H15H14V6H13V7V8H14H15H16ZM7 17V18V19H8H9H10H11V18V17V16V15V14H10H9H8H7V15V16V17ZM5 12H6H7H8H9H10H11V11V10H10H9H8H7H6H5V11V12ZM13 16V15V14H14H15H16H17V15V16V17V18V19H16H15H14H13V18V17V16ZM14 12H13V11V10H14H15H16H17H18H19V11V12H18H17H16H15H14Z" fill="black" />
+                </svg>
+              </h2>
+              <Button className="w-full" onClick={claimTokens}>
+                Claim Daily Tokens
+              </Button>
             </section>
             <section>
-              <h2 className="text-lg font-semibold mb-2">Get stronger</h2>
-              <Button className="w-full" onClick={sendPayment}>Train</Button>
+              <h2 className="text-lg font-semibold mb-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M11 6H12V7V8V9H11V10H10V11H11H12H13H14H15V12V13H14V14H13V15H12V16H11V17H10V18H9V17V16V15H10V14H11V13H10H9H8H7H6V12V11H7V10H8V9H9V8H10V7H11V6ZM15 6H14V7V8H15H16H17V9V10V11V12V13V14V15V16H16H15H14V17V18H15H16H17H18H19V17V16V15V14V13V12V11V10V9V8V7V6H18H17H16H15ZM21 9H20V10V11V12V13V14V15H21H22V14V13V12V11V10V9H21ZM6 16H7V17V18H6H5H4H3H2V17V16V15V14V13V12V11V10V9V8V7V6H3H4H5H6H7V7V8H6H5H4V9V10V11V12V13V14V15V16H5H6Z" fill="black" />
+              </svg>
+              </h2>
+              <Button className="w-full" onClick={sendPayment}>Train to get Stronger</Button>
             </section>
           </div>
         )}

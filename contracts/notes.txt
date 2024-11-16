@@ -11,3 +11,9 @@ https://amoy.polygonscan.com/address/0x892997c4376da36809ee9301bc8c6463fd67530a
 
 Polygon Amoy CCAT sample
 https://amoy.polygonscan.com/tx/0xf3f9d8e0d3744afdfafef2c381fefcf723cb1c2f1cd8b4629d123e363c7da406
+
+Deployment:
+https://ethbangkok.vercel.app/
+
+Tempporary:
+https://c3af-184-22-105-62.ngrok-free.app
