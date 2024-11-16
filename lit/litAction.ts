@@ -14,8 +14,8 @@ import nacl from "tweetnacl";
 
     const decryptedPrivateKey = await Lit.Actions.decryptAndCombine({
       accessControlConditions: accessControlConditions,
-      ciphertext: solanaCipherText,
-      dataToEncryptHash: solanaDataToEncryptHash,
+      ciphertext: polygonCipherText,
+      dataToEncryptHash: polygonDataToEncryptHash,
       chain: "ethereum",
       authSig: null,
     });
@@ -32,49 +32,68 @@ import nacl from "tweetnacl";
     const toSign = await LitActions.runOnce(
       { waitForResponse: true, name: "Lit Actions Test" },
       async () => {
-        const messages = [
+        // Get data
+        const payloadData = {
+          "user": inputUser || "steve",
+        };
+        const responseData = await fetch(
+          "https://ethbangkok-be.vercel.app/api/data/",
           {
-            role: "system",
-            content:
-              "You are an AI assistant that helps people make informed blockchain trading decisions. Only answer with a single sentence.",
-          },
-          {
-            role: "user",
-            content: `${prompt}`,
-          },
-        ];
-
-        const responseInf = await fetch(
-          "https://api.openai.com/v1/chat/completions",
-          {
-            method: "POST",
             headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${apiKey}`,
+              'Content-Type': 'application/json',
+              //'Authorization': 'Bearer ' + dataApiKey,
             },
-            body: JSON.stringify({
-              model: "gpt-4o-mini",
-              messages: messages,
-            }),
+            method: "POST",
+            body: JSON.stringify(payloadData),
           }
         );
+        const resultData = await responseData.json();
+        const data = resultData.data;
 
+
+        // Get inference
+        const messages = [
+          {
+            "role": "system",
+            "content": "You are a therapy cat helping the user feel better and more positive. Take into account that the user has the following mental health challenges. " + data,
+          },
+          {
+            "role": "user",
+            "content": query,
+          },
+        ];
+        const payloadInf = {
+          "model": "meta-llama/Llama-Vision-Free",
+          "messages": messages,
+        };
+        const responseInf = await fetch(
+          "https://api.together.xyz/v1/chat/completions",
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + apiKey,
+            },
+            method: "POST",
+            body: JSON.stringify(payloadInf),
+          }
+        );
         const resultInf = await responseInf.json();
         const answer = resultInf.choices[0].message.content;
 
         const toSign = answer.replace(/\n/g, " ").replace(/\*\*/g, "").trim();
         return toSign;
       }
-    );
-    console.log("OpenAI Response:", toSign);
 
-    const solanaKeyPair = Keypair.fromSecretKey(
+    );
+    console.log("Llama Response:", toSign);
+
+    const polygonKeyPair = Keypair.fromSecretKey(
       Buffer.from(noSaltPrivateKey, "hex")
     );
 
     const signature = nacl.sign.detached(
       new TextEncoder().encode(toSign),
-      solanaKeyPair.secretKey
+      polygonKeyPair.secretKey
     );
 
     console.log("Solana Signature:", signature);
@@ -82,7 +101,7 @@ import nacl from "tweetnacl";
     const isValid = nacl.sign.detached.verify(
       Buffer.from(toSign),
       signature,
-      solanaKeyPair.publicKey.toBuffer()
+      polygonKeyPair.publicKey.toBuffer()
     );
 
     if (!isValid) {

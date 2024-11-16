@@ -25,7 +25,7 @@ const LIT_PKP_PUBLIC_KEY = process.env["LIT_PKP_PUBLIC_KEY"];
 const LIT_NETWORK =
   (process.env["LIT_NETWORK"] as LIT_NETWORKS_KEYS) || LitNetwork.DatilDev;
 
-export const solanaOpenAI = async () => {
+export const polygonOpenAI = async () => {
   let litNodeClient: LitNodeClient;
   let pkpInfo: {
     tokenId?: string;
@@ -73,7 +73,7 @@ export const solanaOpenAI = async () => {
       console.log(`ℹ️  Using provided PKP: ${LIT_PKP_PUBLIC_KEY}`);
       pkpInfo = {
         publicKey: LIT_PKP_PUBLIC_KEY,
-        ethAddress: ethers.computeAddress(`0x${LIT_PKP_PUBLIC_KEY}`),
+        ethAddress: ethers.utils.computeAddress(`0x${LIT_PKP_PUBLIC_KEY}`),
       };
     }
 
@@ -106,7 +106,7 @@ export const solanaOpenAI = async () => {
     console.log("🔄 Generating wrapped key...");
     const response = await generatePrivateKey({
       pkpSessionSigs,
-      network: "amoy", // Polygon Amoy testnet
+      network: "evm", // Polygon Amoy testnet
       memo: "Polygon key for NFT minting",
       litNodeClient,
     });
@@ -115,8 +115,8 @@ export const solanaOpenAI = async () => {
     );
 
     const {
-      ciphertext: solanaCipherText,
-      dataToEncryptHash: solanaDataToEncryptHash,
+      ciphertext: polygonCipherText,
+      dataToEncryptHash: polygonDataToEncryptHash,
     } = await getEncryptedKey({
       pkpSessionSigs,
       litNodeClient,
@@ -143,7 +143,7 @@ export const solanaOpenAI = async () => {
     } = await encryptString(
       {
         accessControlConditions: accessControlConditions,
-        dataToEncrypt: OPENAI_API_KEY,
+        dataToEncrypt: TOGETHER_API_KEY,
       },
       litNodeClient
     );
@@ -156,8 +156,8 @@ export const solanaOpenAI = async () => {
       code: litActionCode,
       jsParams: {
         accessControlConditions,
-        solanaCipherText,
-        solanaDataToEncryptHash,
+        polygonCipherText,
+        polygonDataToEncryptHash,
         apiKeyCipherText,
         apiKeyDataToEncryptHash,
         prompt,
