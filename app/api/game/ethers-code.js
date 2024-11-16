@@ -1,6 +1,7 @@
 const { ethers } = require("ethers");
 
 // 1. Connect to an Ethereum provider
+
 const provider = new ethers.JsonRpcProvider("https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID"); // or use your own provider URL
 
 // 2. Set up the backend wallet (the wallet sending the tokens)
