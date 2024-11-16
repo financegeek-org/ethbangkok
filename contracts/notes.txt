@@ -1,4 +1,8 @@
 Sepolia contract
 0xC143a7c1d9a75C99219D06b0AbF457E48093AF9b
+https://worldchain-sepolia.explorer.alchemy.com/address/0xC143a7c1d9a75C99219D06b0AbF457E48093AF9b
 
+Sepolia SuperCATR contract
+0xf9530F1b672Ef065F7f2D6265714342a7AdE1695
+https://worldchain-sepolia.explorer.alchemy.com/address/0xf9530F1b672Ef065F7f2D6265714342a7AdE1695
 
