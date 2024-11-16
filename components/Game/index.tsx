@@ -1,12 +1,40 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
 import { Home, Swords, Settings } from 'lucide-react'
+import { signIn, signOut, useSession } from "next-auth/react";
 
-export default function Game() {
+export function Game() {
   const [activeTab, setActiveTab] = useState('main')
+  const [imageHeight, setImageHeight] = useState(0)
+  const imageRef = useRef<HTMLImageElement>(null)
+
+  useEffect(() => {
+    const updateImageHeight = () => {
+      if (imageRef.current) {
+        const width = imageRef.current.width
+        const height = imageRef.current.height
+        const aspectRatio = width / height
+        const newHeight = (window.innerWidth * 0.8) / aspectRatio
+        setImageHeight(newHeight)
+      }
+    }
+
+    window.addEventListener('resize', updateImageHeight)
+    updateImageHeight()
+
+    return () => window.removeEventListener('resize', updateImageHeight)
+  }, [])
+
+  const stats = [
+    { name: 'Health', value: 10, max: 10, color: 'bg-red-500' },
+    { name: 'Hunger', value: 3, max: 10, color: 'bg-blue-500' },
+    { name: 'Cuddles', value: 5, max: 10, color: 'bg-yellow-500' },
+    { name: 'Cuteness', value: 10, max: 10, color: 'bg-yellow-500' },
+  ]
 
   return (
     <div className="flex flex-col h-screen bg-white">
@@ -14,16 +42,27 @@ export default function Game() {
         {activeTab === 'main' && (
           <div className="space-y-4">
             <img
-              src="/placeholder.svg?height=200&width=200"
+              src="/avatar.png"
               alt="Cat character"
               className="w-full h-48 object-cover rounded-lg"
             />
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              {[...Array(10)].map((_, i) => (
-                <div key={i} className="bg-gray-100 p-2 rounded">
-                  Stat {i + 1}: Value
-                </div>
-              ))}
+            <div className="bg-gray-100 rounded-lg p-4 shadow-inner">
+              <h2 className="text-xl font-bold mb-4 text-center">Character Stats</h2>
+              <div className="space-y-4">
+                {stats.map((stat) => (
+                  <div key={stat.name} className="space-y-1">
+                    <div className="flex justify-between text-sm font-medium">
+                      <span>{stat.name}</span>
+                      <span>{stat.value}/{stat.max}</span>
+                    </div>
+                    <Progress
+                      value={(stat.value / stat.max) * 100}
+                      className="h-2"
+                      indicatorClassName={stat.color}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}

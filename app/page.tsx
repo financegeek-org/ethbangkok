@@ -1,3 +1,5 @@
+'use client'
+
 import { PayBlock } from "@/components/Pay";
 import { SignIn } from "@/components/SignIn";
 import { Game } from "@/components/Game";
